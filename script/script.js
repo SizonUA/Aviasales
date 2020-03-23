@@ -8,10 +8,16 @@ const formSearch = document.querySelector(".form-search"),
 const cheapestTicket = document.getElementById("cheapest-ticket"),
   otherCheapTickets = document.getElementById("other-cheap-ticket");
 
-const CITIES_API = "data/cities.json",
+const CITIES_API =
+    // "http://api.travelpayouts.com/v2/prices/latest",
+    "data/cities.json",
   PROXY = "https://cors-anywhere.herokuapp.com/",
   API_KEY = "d338cf84b810caf336989e6923014c2a",
-  CALENDAR = "http://min-prices.aviasales.ru/calendar_preload";
+  CALENDAR = "http://min-prices.aviasales.ru/calendar_preload",
+  MAX_COUNT = 10;
+
+const CURRENCY_API =
+  "https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11";
 
 let city = [];
 
@@ -70,7 +76,8 @@ const getDate = date => {
     month: "long",
     year: "numeric",
     hour: "2-digit",
-    minute: "2-digit"
+    minute: "2-digit",
+    timeZoneName: "short"
   });
 };
 
@@ -80,6 +87,23 @@ const getDirect = num => {
   } else {
     return "Non direct";
   }
+};
+
+const getLink = data => {
+  let link = "https://www.aviasales.ua/search/";
+  link += data.origin;
+
+  const date = new Date(data.depart_date);
+  const day = date.getDate();
+  link += day < 10 ? "0" + day : day;
+
+  const month = date.getMonth() + 1;
+  link += month < 10 ? "0" + month : month;
+
+  link += data.destination;
+  link += "1";
+
+  return link;
 };
 
 const createCard = data => {
@@ -93,9 +117,11 @@ const createCard = data => {
     <h3 class="agent">${data.gate}</h3>
     <div class="ticket__wrapper">
       <div class="left-side">
-        <a href="https://www.aviasales.ru/search/SVX2905KGD1" class="button button__buy">Ticket price ${
-          data.value
-        }₽</a>
+        <a href="${getLink(
+          data
+        )}" target="_blank" " class="button button__buy">Ticket price ${
+      data.value
+    } $</a>
       </div>
       <div class="right-side">
         <div class="block-left">
@@ -124,12 +150,24 @@ const createCard = data => {
 };
 
 const renderCheapDay = cheapTicket => {
+  // cheapestTicket.style.display = "block";
+  cheapestTicket.innerHTML =
+    "<h2>The cheapest ticket for the selected date</h2>";
+
   const ticket = createCard(cheapTicket[0]);
   cheapestTicket.append(ticket);
 };
 
 const renderCheapYear = cheapTickets => {
+  // otherCheapTickets.style.display = "block";
+  otherCheapTickets.innerHTML = "<h2>Cheapest tickets for other dates</h2>";
+
   cheapTickets.sort((a, b) => a.value - b.value);
+
+  for (let i = 0; i < cheapTickets.length && i < MAX_COUNT; i++) {
+    const ticket = createCard(cheapTickets[i]);
+    otherCheapTickets.append(ticket);
+  }
 };
 
 const renderCheap = (data, date) => {
@@ -182,9 +220,6 @@ getData(CITIES_API, data => {
 formSearch.addEventListener("submit", event => {
   event.preventDefault();
 
-  cheapestTicket.textContent = "";
-  // otherCheapTickets.textContent = '';
-
   const cityFrom = city.find(item => {
     return inputCitiesFrom.value === item.name_translations.en;
   });
@@ -211,4 +246,4 @@ formSearch.addEventListener("submit", event => {
   }
 });
 
-// 1:49
+// 3:18

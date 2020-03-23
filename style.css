@@ -304,3 +304,8 @@ input {
   position: relative;
   z-index: 1;
 }
+
+/* #cheapest-ticket,
+#other-cheap-tickets {
+  display: none;
+} */
