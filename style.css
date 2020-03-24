@@ -10,7 +10,8 @@
 body {
   font-family: "Open Sans", Helvetica, Arial, sans-serif;
   font-weight: 400;
-  background: #05263F;
+  /* background: #05263F; */
+  background: 50% 50%/100% no-repeat url(img/bg.jpg);
   color: #fff;
 }
 

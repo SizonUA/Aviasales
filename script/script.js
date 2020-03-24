@@ -10,8 +10,8 @@ const cheapestTicket = document.getElementById("cheapest-ticket"),
 
 const CITIES_API = "http://api.travelpayouts.com/data/ru/cities.json", //offline base - "data/cities.json",
   PROXY = "https://cors-anywhere.herokuapp.com/",
-  API_KEY = "d338cf84b810caf336989e6923014c2a",
   CALENDAR = "http://min-prices.aviasales.ru/calendar_preload",
+  // API_KEY = "d338cf84b810caf336989e6923014c2a",
   MAX_COUNT = 10;
 
 const CURRENCY_API = "http://yasen.aviasales.ru/adaptors/currency.json";
@@ -71,6 +71,7 @@ const selectCity = (event, input, list) => {
     input.value = target.textContent;
     list.textContent = "";
   }
+
 };
 
 const getNameCity = code => {
@@ -231,7 +232,7 @@ formSearch.addEventListener("submit", event => {
   if (formData.from && formData.to) {
     const requestData =
       `?depart_date=${formData.when}&origin=${formData.from.code}` +
-      `&destination=${formData.to.code}&one_way=true&token=${API_KEY}`;
+      `&destination=${formData.to.code}&one_way=true`;
 
     getData(CALENDAR + requestData, data => {
       renderCheap(data, formData.when);
