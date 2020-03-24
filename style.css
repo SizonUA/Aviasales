@@ -305,7 +305,7 @@ input {
   z-index: 1;
 }
 
-/* #cheapest-ticket,
+#cheapest-ticket,
 #other-cheap-tickets {
   display: none;
-} */
+}

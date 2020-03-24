@@ -6,19 +6,46 @@ const formSearch = document.querySelector(".form-search"),
   inputDateDepart = formSearch.querySelector(".input__date-depart");
 
 const cheapestTicket = document.getElementById("cheapest-ticket"),
-  otherCheapTickets = document.getElementById("other-cheap-ticket");
+  otherCheapTickets = document.getElementById("other-cheap-tickets");
 
-const CITIES_API = "data/cities.json",
-  // "http://api.travelpayouts.com/v2/prices/latest",
+const CITIES_API = "http://api.travelpayouts.com/data/ru/cities.json", //offline base - "data/cities.json",
   PROXY = "https://cors-anywhere.herokuapp.com/",
   API_KEY = "d338cf84b810caf336989e6923014c2a",
   CALENDAR = "http://min-prices.aviasales.ru/calendar_preload",
   MAX_COUNT = 10;
 
-// const CURRENCY_API =
-//   "https://api.privatbank.ua/p24api/pubinfo?exchange&json&coursid=11";
+const CURRENCY_API = "http://yasen.aviasales.ru/adaptors/currency.json";
 
-let city = [];
+let city = [],
+  euro = 0;
+
+// BEGIN FUNCTION
+
+const getData = (url, callback, errorFunc = console.error) => {
+  const request = new XMLHttpRequest();
+
+  request.open("GET", url);
+
+  request.addEventListener("readystatechange", () => {
+    if (request.readyState !== 4) return;
+
+    if (request.status === 200) {
+      callback(request.response);
+    } else {
+      errorFunc(request.status);
+    }
+  });
+
+  request.send();
+};
+
+const formEvent = document.getElementById("form_search");
+formEvent.addEventListener("focus", function (event) {
+  event.target.style.background = "#f57c00";
+}, true);
+formEvent.addEventListener("blur", function (event) {
+  event.target.style.background = "";
+}, true);
 
 const showCity = (input, list) => {
   list.textContent = "";
@@ -36,24 +63,6 @@ const showCity = (input, list) => {
       list.append(li);
     });
   }
-};
-
-const getData = (url, callback) => {
-  const request = new XMLHttpRequest();
-
-  request.open("GET", url);
-
-  request.addEventListener("readystatechange", () => {
-    if (request.readyState !== 4) return;
-
-    if (request.status === 200) {
-      callback(request.response);
-    } else {
-      console.error(request.status);
-    }
-  });
-
-  request.send();
 };
 
 const selectCity = (event, input, list) => {
@@ -119,8 +128,8 @@ const createCard = data => {
         <a href="${getLink(
           data
         )}" target="_blank" " class="button button__buy">Ticket price ${
-      data.value
-    } $</a>
+          Math.ceil(data.value / euro)
+    } €</a>
       </div>
       <div class="right-side">
         <div class="block-left">
@@ -149,16 +158,15 @@ const createCard = data => {
 };
 
 const renderCheapDay = cheapTicket => {
-  // cheapestTicket.style.display = "block";
-  cheapestTicket.innerHTML =
-    "<h2>The cheapest ticket for the selected date</h2>";
+  cheapestTicket.style.display = "block";
+  cheapestTicket.innerHTML = "<h2>The cheapest ticket for the selected date</h2>";
 
   const ticket = createCard(cheapTicket[0]);
   cheapestTicket.append(ticket);
 };
 
 const renderCheapYear = cheapTickets => {
-  // otherCheapTickets.style.display = "block";
+  otherCheapTickets.style.display = "block";
   otherCheapTickets.innerHTML = "<h2>Cheapest tickets for other dates</h2>";
 
   cheapTickets.sort((a, b) => a.value - b.value);
@@ -171,12 +179,12 @@ const renderCheapYear = cheapTickets => {
 
 const renderCheap = (data, date) => {
   const cheapTicketYear = JSON.parse(data).best_prices;
-  console.log(cheapTicketYear);
+  // console.log(cheapTicketYear);
 
   const cheapTicketDay = cheapTicketYear.filter(item => {
     return item.depart_date === date;
   });
-  console.log(cheapTicketDay);
+  // console.log(cheapTicketDay);
 
   renderCheapDay(cheapTicketDay);
   renderCheapYear(cheapTicketYear);
@@ -186,7 +194,7 @@ inputCitiesFrom.addEventListener("input", () => {
   showCity(inputCitiesFrom, dropdownCitiesFrom);
 });
 
-inputCitiesTo.addEventListener("click", () => {
+inputCitiesTo.addEventListener("input", () => {
   showCity(inputCitiesTo, dropdownCitiesTo);
 });
 
@@ -198,22 +206,11 @@ dropdownCitiesTo.addEventListener("click", event => {
   selectCity(event, inputCitiesTo, dropdownCitiesTo);
 });
 
-// function call
+// FUNCTION CALL
 
-getData(CITIES_API, data => {
-  city = JSON.parse(data).filter(item => item.name_translations.en);
-
-  city.sort((a, b) => {
-    if (a.name_translations.en > b.name_translations.en) {
-      return 1;
-    }
-    if (a.name_translations.en < b.name_translations.en) {
-      return -1;
-    }
-    return 0;
-  });
-  console.log(city);
-});
+getData(PROXY + CURRENCY_API, data => {
+  euro = JSON.parse(data).eur;
+})
 
 formSearch.addEventListener("submit", event => {
   event.preventDefault();
@@ -238,10 +235,26 @@ formSearch.addEventListener("submit", event => {
 
     getData(CALENDAR + requestData, data => {
       renderCheap(data, formData.when);
+    }, error => {
+      alert('There are no flights in this direction');
+      console.error('Error', error)
     });
   } else {
     alert("Enter correct name city");
   }
 });
 
-// 3:18
+getData(PROXY + CITIES_API, data => {
+  city = JSON.parse(data).filter(item => item.name && item.name_translations.en);
+
+  city.sort((a, b) => {
+    if (a.name_translations.en > b.name_translations.en) {
+      return 1;
+    }
+    if (a.name_translations.en < b.name_translations.en) {
+      return -1;
+    }
+    return 0;
+  });
+  // console.log(city);
+});
