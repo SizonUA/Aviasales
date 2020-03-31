@@ -8,13 +8,16 @@ const formSearch = document.querySelector(".form-search"),
 const cheapestTicket = document.getElementById("cheapest-ticket"),
   otherCheapTickets = document.getElementById("other-cheap-tickets");
 
-const CITIES_API = "http://api.travelpayouts.com/data/ru/cities.json", //offline base - "data/cities.json",
-  PROXY = "https://cors-anywhere.herokuapp.com/",
+const CITIES_API = "data/cities.json",
+  //"http://api.travelpayouts.com/data/ru/cities.json", //offline base - "data/cities.json",
+  PROXY = "",
+  //"https://cors-anywhere.herokuapp.com/", //offline base - "",
   CALENDAR = "http://min-prices.aviasales.ru/calendar_preload",
   // API_KEY = "d338cf84b810caf336989e6923014c2a",
   MAX_COUNT = 10;
 
-const CURRENCY_API = "http://yasen.aviasales.ru/adaptors/currency.json";
+const CURRENCY_API = "data/currency.json";
+//"http://yasen.aviasales.ru/adaptors/currency.json"; //offline base - "data/currency.json";
 
 let city = [],
   euro = 0;
@@ -35,17 +38,24 @@ const getData = (url, callback, errorFunc = console.error) => {
       errorFunc(request.status);
     }
   });
-
   request.send();
 };
 
 const formEvent = document.getElementById("form_search");
-formEvent.addEventListener("focus", function (event) {
-  event.target.style.background = "#f57c00";
-}, true);
-formEvent.addEventListener("blur", function (event) {
-  event.target.style.background = "";
-}, true);
+formEvent.addEventListener(
+  "focus",
+  function(event) {
+    event.target.style.background = "#f57c00";
+  },
+  true
+);
+formEvent.addEventListener(
+  "blur",
+  function(event) {
+    event.target.style.background = "";
+  },
+  true
+);
 
 const showCity = (input, list) => {
   list.textContent = "";
@@ -71,7 +81,6 @@ const selectCity = (event, input, list) => {
     input.value = target.textContent;
     list.textContent = "";
   }
-
 };
 
 const getNameCity = code => {
@@ -128,9 +137,9 @@ const createCard = data => {
       <div class="left-side">
         <a href="${getLink(
           data
-        )}" target="_blank" " class="button button__buy">Ticket price ${
-          Math.ceil(data.value / euro)
-    } €</a>
+        )}" target="_blank" " class="button button__buy">Ticket price ${Math.ceil(
+      data.value / euro
+    )} €</a>
       </div>
       <div class="right-side">
         <div class="block-left">
@@ -160,7 +169,8 @@ const createCard = data => {
 
 const renderCheapDay = cheapTicket => {
   cheapestTicket.style.display = "block";
-  cheapestTicket.innerHTML = "<h2>The cheapest ticket for the selected date</h2>";
+  cheapestTicket.innerHTML =
+    "<h2>The cheapest ticket for the selected date</h2>";
 
   const ticket = createCard(cheapTicket[0]);
   cheapestTicket.append(ticket);
@@ -211,7 +221,7 @@ dropdownCitiesTo.addEventListener("click", event => {
 
 getData(PROXY + CURRENCY_API, data => {
   euro = JSON.parse(data).eur;
-})
+});
 
 formSearch.addEventListener("submit", event => {
   event.preventDefault();
@@ -234,19 +244,25 @@ formSearch.addEventListener("submit", event => {
       `?depart_date=${formData.when}&origin=${formData.from.code}` +
       `&destination=${formData.to.code}&one_way=true`;
 
-    getData(CALENDAR + requestData, data => {
-      renderCheap(data, formData.when);
-    }, error => {
-      alert('There are no flights in this direction');
-      console.error('Error', error)
-    });
+    getData(
+      CALENDAR + requestData,
+      data => {
+        renderCheap(data, formData.when);
+      },
+      error => {
+        alert("There are no flights in this direction");
+        console.error("Error", error);
+      }
+    );
   } else {
     alert("Enter correct name city");
   }
 });
 
 getData(PROXY + CITIES_API, data => {
-  city = JSON.parse(data).filter(item => item.name && item.name_translations.en);
+  city = JSON.parse(data).filter(
+    item => item.name && item.name_translations.en
+  );
 
   city.sort((a, b) => {
     if (a.name_translations.en > b.name_translations.en) {
@@ -259,3 +275,18 @@ getData(PROXY + CITIES_API, data => {
   });
   // console.log(city);
 });
+
+// let input = document.querySelectorAll("input");
+
+// input.onblur = inputBlur;
+// input.onfocus = inputFocus;
+
+// function inputBlur() {
+//   input.value = "Focus has been lost";
+// }
+
+// function inputFocus() {
+//   input.value = "Focus is here";
+// }
+
+// console.log(input);
