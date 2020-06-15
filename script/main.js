@@ -9,16 +9,16 @@ const formSearch = document.querySelector(".form-search"),
 const cheapestTicket = document.getElementById("cheapest-ticket"),
   otherCheapTickets = document.getElementById("other-cheap-tickets");
 
-const CITIES_API = "http://api.travelpayouts.com/data/ru/cities.json",
-  //offline base - "data/cities.json",
-  PROXY = "https://cors-anywhere.herokuapp.com/",
-  //offline base - "",
+const CITIES_API = "data/cities.json",
+  //base - "http://api.travelpayouts.com/data/ru/cities.json",
+  PROXY = "",
+  //base - "https://cors-anywhere.herokuapp.com/",
   CALENDAR = "http://min-prices.aviasales.ru/calendar_preload",
   API_KEY = "d338cf84b810caf336989e6923014c2a",
   MAX_COUNT = 10;
 
-const CURRENCY_API = "http://yasen.aviasales.ru/adaptors/currency.json";
- //offline base - "data/currency.json";
+const CURRENCY_API = "data/currency.json";
+ //base - "http://yasen.aviasales.ru/adaptors/currency.json";
 
 let city = [],
   euro = 0;
