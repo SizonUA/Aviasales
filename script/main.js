@@ -14,11 +14,11 @@ const CITIES_API = "data/cities.json",
   PROXY = "",
   //base - "https://cors-anywhere.herokuapp.com/",
   CALENDAR = "http://min-prices.aviasales.ru/calendar_preload",
-  API_KEY = "d338cf84b810caf336989e6923014c2a",
+  // API_KEY = "d338cf84b810caf336989e6923014c2a",
   MAX_COUNT = 10;
 
 const CURRENCY_API = "data/currency.json";
- //base - "http://yasen.aviasales.ru/adaptors/currency.json";
+//base - "http://yasen.aviasales.ru/adaptors/currency.json";
 
 let city = [],
   euro = 0;
@@ -44,14 +44,14 @@ const getData = (url, callback, errorFunc = console.error) => {
 const formEvent = document.getElementById("form_search");
 formEvent.addEventListener(
   "focus",
-  function(event) {
+  function (event) {
     event.target.style.background = "#f57c00";
   },
   true
 );
 formEvent.addEventListener(
   "blur",
-  function(event) {
+  function (event) {
     event.target.style.background = "";
   },
   true
