@@ -3,27 +3,27 @@ const formSearch = document.querySelector(".form-search"),
   dropdownCitiesFrom = formSearch.querySelector(".dropdown__cities-from"),
   inputCitiesTo = formSearch.querySelector(".input__cities-to"),
   dropdownCitiesTo = formSearch.querySelector(".dropdown__cities-to"),
-  inputDateDepart = formSearch.querySelector(".input__date-depart");
+  inputDateDepart = formSearch.querySelector(".input__date-depart"),
+  body = document.querySelector("body");
 
 const cheapestTicket = document.getElementById("cheapest-ticket"),
   otherCheapTickets = document.getElementById("other-cheap-tickets");
 
-const CITIES_API = "data/cities.json",
-  //"http://api.travelpayouts.com/data/ru/cities.json", //offline base - "data/cities.json",
-  PROXY = "",
-  //"https://cors-anywhere.herokuapp.com/", //offline base - "",
+const CITIES_API = "http://api.travelpayouts.com/data/ru/cities.json",
+  //offline base - "data/cities.json",
+  PROXY = "https://cors-anywhere.herokuapp.com/",
+  //offline base - "",
   CALENDAR = "http://min-prices.aviasales.ru/calendar_preload",
-  // API_KEY = "d338cf84b810caf336989e6923014c2a",
+  API_KEY = "d338cf84b810caf336989e6923014c2a",
   MAX_COUNT = 10;
 
-const CURRENCY_API = "data/currency.json";
-//"http://yasen.aviasales.ru/adaptors/currency.json"; //offline base - "data/currency.json";
+const CURRENCY_API = "http://yasen.aviasales.ru/adaptors/currency.json";
+ //offline base - "data/currency.json";
 
 let city = [],
   euro = 0;
 
 // BEGIN FUNCTION
-
 const getData = (url, callback, errorFunc = console.error) => {
   const request = new XMLHttpRequest();
 
@@ -127,10 +127,11 @@ const getLink = data => {
 const createCard = data => {
   const ticket = document.createElement("article");
   ticket.classList.add("ticket");
-
+  body.style.background = "white";
   let deep = "";
 
   if (data) {
+    body.style.background = "";
     deep = `
     <h3 class="agent">${data.gate}</h3>
     <div class="ticket__wrapper">
@@ -190,12 +191,10 @@ const renderCheapYear = cheapTickets => {
 
 const renderCheap = (data, date) => {
   const cheapTicketYear = JSON.parse(data).best_prices;
-  // console.log(cheapTicketYear);
 
   const cheapTicketDay = cheapTicketYear.filter(item => {
     return item.depart_date === date;
   });
-  // console.log(cheapTicketDay);
 
   renderCheapDay(cheapTicketDay);
   renderCheapYear(cheapTicketYear);
@@ -218,7 +217,6 @@ dropdownCitiesTo.addEventListener("click", event => {
 });
 
 // FUNCTION CALL
-
 getData(PROXY + CURRENCY_API, data => {
   euro = JSON.parse(data).eur;
 });
@@ -273,20 +271,4 @@ getData(PROXY + CITIES_API, data => {
     }
     return 0;
   });
-  // console.log(city);
 });
-
-// let input = document.querySelectorAll("input");
-
-// input.onblur = inputBlur;
-// input.onfocus = inputFocus;
-
-// function inputBlur() {
-//   input.value = "Focus has been lost";
-// }
-
-// function inputFocus() {
-//   input.value = "Focus is here";
-// }
-
-// console.log(input);
